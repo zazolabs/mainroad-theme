@@ -28,13 +28,19 @@
 	<link rel="stylesheet" href="{{ . | relURL }}">
 	{{- end }}
 	<link rel="shortcut icon" href="{{ "favicon.ico" | relURL }}">
-	{{- if not .Site.IsServer }}
-		{{ template "_internal/google_analytics_async.html" . }}
+	{{- $server := "" }}
+	{{- if gt (int (index (split hugo.Version ".") 1)) "120" }}
+		{{ $server = hugo.IsServer }}
+    {{- else }}
+		{{ $server = .Site.IsServer }}
+	{{- end -}}
+    {{- if not $server }}
+	{{ template "_internal/google_analytics.html" . }}
 	{{- end }}
-	{{ if (and ( not .Site.IsServer) (.Site.Params.gtm_id))}}{{- partial "gtm.html" . }}{{ end }}
+	{{ if (and ( not $server) (.Site.Params.gtm_id))}}{{- partial "gtm.html" . }}{{ end }}
 </head>
 <body class="body">
-	{{ if (and (not .Site.IsServer) (.Site.Params.gtm_id))}}{{- partial "gtmbody.html" . }}{{ end }}
+	{{ if (and (not $server) (.Site.Params.gtm_id))}}{{- partial "gtmbody.html" . }}{{ end }}
 	<div class="container container--outer">
 		{{ partial "header" . }}
 		<div class="wrapper flex">
